@@ -75,7 +75,7 @@ Controller → Service → Repository → DbContext
 ### Clone repository
 
 ```bash
-git clone YOUR_REPO_URL
+git clone https://github.com/HimanshuVaishya/job-application-tracking-api
 ```
 
 ### Configure secrets
