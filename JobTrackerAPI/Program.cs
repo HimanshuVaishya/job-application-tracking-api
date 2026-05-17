@@ -60,6 +60,7 @@ namespace JobTrackerAPI
             builder.Services.AddScoped<IJobService, JobService>();
             builder.Services.AddScoped<IApplicationService, ApplicationService>();
             builder.Services.AddScoped<IDashboardService, DashboardService>();
+            builder.Services.AddScoped<IFileService, FileService>();
 
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(
@@ -94,6 +95,7 @@ namespace JobTrackerAPI
             app.UseHttpsRedirection();
 
             app.UseMiddleware<ExceptionMiddleware>();
+            app.UseStaticFiles();
             app.UseAuthentication();
             app.UseAuthorization();
 

@@ -8,12 +8,16 @@ A secure backend recruitment management system built using ASP.NET Core Web API.
 - JWT Authentication
 - Role-based Authorization
 - Job Posting Management
-- Candidate Job Applications
+- Candidate Application Management
 - Application Status Workflow
 - Dashboard Analytics
 - Global Exception Handling
 - Standardized API Responses
-
+- Resume File Upload with Validation
+- Centralized File Handling Service
+- Secure Multipart Form Handling
+- Input Validation
+- Swagger API Documentation
 ---
 
 ## Tech Stack

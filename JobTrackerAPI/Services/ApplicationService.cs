@@ -10,32 +10,38 @@ namespace JobTrackerAPI.Services
     {
         private readonly IJobRepository _jobRepository;
         private readonly IApplicationRepository _applicationRepository;
-        public ApplicationService(IJobRepository jobRepository, IApplicationRepository applicationRepository)
+        private readonly IFileService _fileService;
+        public ApplicationService(IJobRepository jobRepository, IApplicationRepository applicationRepository, IFileService fileService)
         {
             this._jobRepository = jobRepository;
             this._applicationRepository = applicationRepository;
+            _fileService = fileService;
         }
         public async Task<string> ApplyJobAsync(int userId, ApplyJobDto dto)
         {
-
             var job = await _jobRepository.GetJobByIDAsync(dto.JobId);
 
-            if (job == null) return "Job not found";
+            if (job == null)
+                return "Job not found";
 
-            var lstApplications = await _applicationRepository.GetAllApplicationsAsync();
+            var existingApplication = await _applicationRepository.GetApplicationByUserAndJobAsync(userId, dto.JobId);
 
-            if (lstApplications.Any(x => x.UserId == userId && x.JobId == dto.JobId)) return "Already applied";
+            if (existingApplication != null)
+                return "Already applied";
+
+            // File saving logic moved here
+            var resumePath = await _fileService.SaveResumeAsync(dto.Resume);
 
             var application = new Application
             {
                 UserId = userId,
                 JobId = dto.JobId,
-                ResumePath = dto.ResumePath,
+                ResumePath = resumePath,
                 Status = "applied",
                 AppliedDate = DateTime.UtcNow
             };
 
-            _applicationRepository.AddApplicationAsync(application);
+            await _applicationRepository.AddApplicationAsync(application);
 
             return "Applied successfully";
         }
@@ -66,7 +72,7 @@ namespace JobTrackerAPI.Services
 
             application.Status = status;
 
-            _applicationRepository.AddApplicationAsync(application);
+            await _applicationRepository.UpdateApplicationAsync(application);
 
             return "Status updated successfully";
         }

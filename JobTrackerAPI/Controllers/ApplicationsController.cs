@@ -20,17 +20,15 @@ namespace JobTrackerAPI.Controllers
 
         [Authorize(Roles = "User")]
         [HttpPost]
-        public async Task<IActionResult> Apply(ApplyJobDto dto)
+        public async Task<IActionResult> Apply([FromForm] ApplyJobDto dto)
         {
             var userEmail = User.FindFirst(ClaimTypes.Name)?.Value;
 
             if (userEmail == null)
-                return Unauthorized();
+                return Unauthorized(new ApiResponse<string>(false, "Invalid token"));
 
             var userId = int.Parse(User.FindFirst("UserId")?.Value ?? "0");
-
             var result = await _applicationService.ApplyJobAsync(userId, dto);
-
             return Ok(new ApiResponse<string>(true, result));
         }
 
@@ -39,8 +37,6 @@ namespace JobTrackerAPI.Controllers
         public async Task<IActionResult> GetApplications()
         {
             var apps = await _applicationService.GetApplicationsAsync();
-
-
             return Ok(new ApiResponse<object>(true, "List of applications", apps));
         }
 
@@ -49,7 +45,6 @@ namespace JobTrackerAPI.Controllers
         public async Task<IActionResult> UpdateStatus(int id, UpdateStatusDto dto)
         {
             var result = await _applicationService.UpdateStatusAsync(id, dto.Status);
-
             return Ok(new ApiResponse<string>(true, result));
         }
     }
